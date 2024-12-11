@@ -14,55 +14,67 @@
 void setup() {
   bool cont1 = false;
   bool cont2 = false;
+
   //call the pin set up function
   pin_setup();
   initial_setup();
+
   //Saftey interrupt.
   attachInterrupt(digitalPinToInterrupt(kill_switch),kill_system, HIGH);
   
   //Screen Welcome
   print_image(1, welcome_wait);
-  print_image(2, welcome_wait);
+  print_image(2, welcome_wait); 
 
-
-  //make sure all other controlers are initialized & all in sync!  
+  //Controller check before proceeding
+  int st = millis();
   while(cont1 && cont2 == false){
-    if(Serial2.available() >= 2){
-      code = Serial2.read();
-      data = Serial2.read();
+    if(Serial2.available() >= 3){
+        check_can();
 
-      switch(code){
-        case 5:
-          switch(data){
-            case 1:
+      switch(rec_address){
+        case 2: //check for controller 2
+          if (code == 5 && data[0] == 1) {
             cont1 = true;
-            data = 0;
-            break;
-
-            case 2:
-            cont2 = true;
-            data = 0;
-            break;
-
-            default:
-            data = 0;
-            break;
           }
-          code = 0;
-          break;
+          else if (code == 5 && data[0] == 2) {
+          // print error screen!
+            print_image(1, error);
+            print_image(2, controller1);
+            error_state();
+          }
+        break;
         
+        case 3: //check for controller 3
+        if(code == 5 && data[0] == 1){
+          cont2 = true;
+        }
+        else if (code == 5 && data[0] == 2){
+          //print error screen!
+          print_image(1, error);
+          print_image(2, controller2);
+          error_state();
+        }
+        break;
         default:
-        code = 0;
         break;
       }
+    }
+    if ((millis() - st) >= 180000){
+      // print error screen or timeout screen!
+      print_image(1, error);
+      print_image(2, time_out);
+      error_state();
     }
   }
 
   // remove please wait screen and update to welcome!
   print_image(1,welcome);
   print_image(2,welcome);
+
+  //send ready messages to the controllers
   comms(ENGINE_ADDRESS,5,1);
-  comms(CONTROLL_ADDRESS,5,1);
+  comms(CONTROLL_ADDRESS,5,2);
 }
 
 void loop() {
@@ -202,67 +214,66 @@ void loop() {
   
 
  
- if (Serial2.available() >= 2){
-  code = Serial2.read();
-  data = Serial2.read();
+ if (Serial2.available() >= 3){
+  check_can();
  }
 
  switch(code){
   case 1:
-    switch (data) {
+    switch (data[0]) {
       case 1:
         print_image(1, main_display_d);
-        data = 0;
+        data[0] = 0;
       break;
       case 2:
         print_image(1, main_display_n);
-        data = 0;
+        data[0] = 0;
        break;
        case 3:
         print_image(1, main_display_r);
-        data = 0;
+        data[0] = 0;
       break;
       default:
-      data = 0;
+      data[0] = 0;
       break;}
   code = 0;
   break;
 
   case 2:
-    switch (data) {
+    switch (data[0]) {
     case 1:
       digitalWrite(fuel_led,HIGH);
-      data = 0;
+      data[0] = 0;
       break;
     
     case 2:
       digitalWrite(fuel_led,LOW);
-      data = 0;
+      data[0] = 0;
       break;
     }
   code = 0;
   break;
 
   case 3:
-    switch (data) {
+    switch (data[0]) {
       case 1:
       digitalWrite(clutch_led, HIGH);
-      data = 0;
+      data[0] = 0;
       break;
 
       case 2:
       digitalWrite(clutch_led, LOW);
-      data = 0;
+      data[0] = 0;
       break;
     default:
-    data = 0;
+    data[0] = 0;
     break;
     }
   code = 0;
   break;
 
   case 4:
-    fuel_current = round(data);
+    fuel_current = round(data[0]);
     code = 0;
   break;
 

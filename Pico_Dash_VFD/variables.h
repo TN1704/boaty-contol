@@ -32,7 +32,7 @@ bool reserve_conf;
 // Variable & Constants
 int current_drive;
 double speed;
-int data;
+int data[8];
 int code;
 int throttle;
 int throttle_send;
@@ -44,6 +44,7 @@ int fuel_previous;
 double lastSpeed;
 double lastThrottle;
 int low_fuel_level = 15;  //threshold for low fuel LED
+uint16_t rec_address;
 
 // GPS Values
 

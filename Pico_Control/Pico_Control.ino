@@ -1,6 +1,7 @@
 // Controller side of the Pico setup address 2
 
-
+# include <Servo.h>
+# include <LittleFS.h>
 # include "pins.h"
 # include "variables.h"
 # include "functions.h"
@@ -36,14 +37,14 @@ void setup() {
   reverse_state = digitalRead(reverse_switch);
 
   init_drive();
-  comms(DASH_ADDRESS, 5, 1);
+  comms(DASH_ADDRESS, 5, 2);
 
   while (!ready) {
     if(Serial1.available() >=2){
       code = Serial1.read();
       data = Serial1.read();
     }
-    if(code == 5 && data == 1){
+    if(code == 5 && data == 2){
       ready = true;
     }
   }

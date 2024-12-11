@@ -1,3 +1,4 @@
+#include "Arduino.h"
 // function to keep all the finctions for the main ino file in one place
 
 # ifndef FUNCTIONS_H
@@ -98,6 +99,9 @@ void initial_setup(){
   Serial2.setTX(can_tx);
   Serial2.begin(9600);
 
+  digitalWrite(screen1_cs, HIGH);
+  digitalWrite(screen2_cs, HIGH);
+
   screen1.begin();
   screen2.begin();
 
@@ -120,6 +124,41 @@ void initial_setup(){
   lat1 = lon1 = 0;
   speed = 0.0;
   Serial1.println("$PMTK220,200*2C\r\n");
+  digitalWrite(drive_led, HIGH);
+  digitalWrite(reverse_led, HIGH);
+  digitalWrite(neutral_led,HIGH);
+  digitalWrite(fuel_led, HIGH);
+  digitalWrite(clutch_led, HIGH);
+  digitalWrite(low_fuel, HIGH);
+  delay(1000);
+  digitalWrite(drive_led, LOW);
+  digitalWrite(reverse_led, LOW);
+  digitalWrite(neutral_led,LOW);
+  digitalWrite(fuel_led, LOW);
+  digitalWrite(clutch_led, LOW);
+  digitalWrite(low_fuel, LOW);
+}
+
+bool check_can(){
+  uint8_t byte1 = Serial2.read();
+  uint8_t byte2 = Serial2.read();
+  int dlc = Serial2.read();
+  rec_address = (uint16_t(byte1) << 8) | uint16_t(byte2);
+  delay(50);
+
+  for(int i = 0; i < dlc; i++){
+      if (i == 0) {
+      code = Serial2.read();
+      }
+      else {
+      data[i-1] = Serial2.read();
+      }
+  }
+return true;
+}
+
+void error_state(){
+  // run this to take control of the main control to investigate error. (infinate while loop until exit or system restart)
 
 }
 

@@ -12,13 +12,23 @@
 |          |                                      |
 |     4    | * Fuel level                         | Mapped from 0 to 240 to help with the display
 |          |                                      |
-|     5    | * Start confirmation code            | 1 - sent when the MC has completed setup() Dash to control confirmation to all other MC to allow loop
+|     5    | * Start confirmation code            | 1 - controller ready
+|          |                                      | 2 - Error - check logs
 |          |                                      |
 |     6    | * Throttle Position                  | Mapped int from 0 to 255.
 |          |                                      |
 |     7    | * Fuel reserve                       | 1 - Not reserve
 |          |                                      | 2 - Engage reserve system. 
-
+|          |                                      |
+|     8    | * Drive Steps                        | 1 - send drive steps and neutral pos
+|          |                                      | 2 - Re-calibrate
+|          |                                      |
+|     9    | * Engine Start                       | 1 - Engine start.
+|          |                                      | 2 - Engine Starting.
+|          |                                      | 3 - Engine Started.
+|          |                                      |
+|    10    | * RPM Request                        | 1 - Request to send
+|          |                                      | return RPM over 2 bytes high & low byte
 
 CAN ADDRESSES:
 1 - Dash (main controller)
@@ -50,10 +60,12 @@ For communication issues, verify CAN Bus wiring and baud rates.
 
 
 Future Enhancements
-Dynamic Configuration: Adjust thresholds like low_fuel_level via a CAN command.
-Additional Inputs: Add support for more vehicle sensors.
-Error Handling: Implement advanced error diagnostics for CAN communication.
-External EEPROM for Hours run & Logging
+* Dynamic Configuration: Adjust thresholds like low_fuel_level via a CAN command.
+* Additional Inputs: Add support for more vehicle sensors.
+* Error Handling: Implement advanced error diagnostics for CAN communication.
+* External EEPROM for Logging
+* enhanced CAN comms
+* config LCD with menu system
 
 
 Credits
