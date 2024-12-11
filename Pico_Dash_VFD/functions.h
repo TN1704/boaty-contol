@@ -113,8 +113,6 @@ void initial_setup(){
   fuel_conf = false;
   fuel = false;
   isReserve = false;
-  bool cont1 = false;
-  bool cont2 = false;
 
   // variable set
   current_drive = -1;
